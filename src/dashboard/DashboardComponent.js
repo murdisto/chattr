@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
 import ChatsComponent from '../chatsList/ChatsComponent';
-const firebase = require('firebase');
-export default class DashboardComponent extends Component {
+import { Button, withStyles } from '@material-ui/core';
+import styles from './styles';
+const firebase = require('firebase/app');
+class DashboardComponent extends Component {
+  _isMounted = false;
   constructor() {
     super();
   
@@ -15,6 +18,8 @@ export default class DashboardComponent extends Component {
   
   render() {
     
+    const { classes } = this.props;
+    
     return (
       <div>
         <ChatsComponent 
@@ -25,10 +30,13 @@ export default class DashboardComponent extends Component {
           userEmail={this.state.email}
           selectedChatIndex={this.state.selectedChat}
         ></ChatsComponent>
+        <Button className={classes.logOutBtn} onClick={this.onLogoutClick}>Log out</Button>
       </div>
       
     )
   }
+  
+  onLogoutClick = () => firebase.auth().signOut();
   
   onSelectChat = chatIndex => {
     console.log('onSelectChat', chatIndex);
@@ -44,6 +52,7 @@ export default class DashboardComponent extends Component {
   }
   
   componentDidMount = () => {
+    this._isMounted = true;
     firebase.auth().onAuthStateChanged(async _usr => {
       if(!_usr) {
         this.props.history.push('/login');
@@ -53,16 +62,24 @@ export default class DashboardComponent extends Component {
           .collection('chats')
           .where('users', 'array-contains', _usr.email)
           .onSnapshot(async res => {
-            const chats = res.docs.map(_doc => _doc.data());
-            await this.setState({
-              email: _usr.email,
-              chats
-            });
-            console.log('onsnapshot', this.state);
+            if (this._isMounted) {
+              const chats = res.docs.map(_doc => _doc.data());
+              await this.setState({
+                email: _usr.email,
+                chats
+              });
+            }
+            
+            // console.log('onsnapshot', this.state);
             
           })
       }
     })
   }
   
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+  
 }
+export default withStyles(styles)(DashboardComponent);
