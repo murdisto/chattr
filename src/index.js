@@ -4,9 +4,9 @@ import './index.css';
 // import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter as Router, Route } from 'react-router-dom'
-import LoginComponent from './login/LoginComponent'
-import SignupComponent from './signup/SignupComponent'
-import DashboardComponent from './dashboard/DashboardComponent'
+import LoginComponent from './login/Login'
+import SignupComponent from './signup/Signup'
+import DashboardComponent from './dashboard/Dashboard'
 
 
 const firebase = require('firebase');

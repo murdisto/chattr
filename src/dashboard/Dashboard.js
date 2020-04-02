@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import ChatsComponent from '../chatsList/ChatsComponent';
+import ChatsComponent from '../chats/Chats';
+import ChatComponent from '../chat/Chat';
 import { Button, withStyles } from '@material-ui/core';
 import styles from './styles';
 const firebase = require('firebase/app');
@@ -30,6 +31,7 @@ class DashboardComponent extends Component {
           userEmail={this.state.email}
           selectedChatIndex={this.state.selectedChat}
         ></ChatsComponent>
+        <ChatComponent></ChatComponent>
         <Button className={classes.logOutBtn} onClick={this.onLogoutClick}>Log out</Button>
       </div>
       
