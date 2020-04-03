@@ -26,6 +26,9 @@ class ChatInputComponent extends Component {
           onKeyUp={event => this.userTyping(event)}
           className={classes.chatInput}
           id='inputbox'
+          onFocus={this.onInputClick}
+          color='secondary' 
+          
         ></TextField>
         <Send
           onClick={this.submitMessage}
@@ -51,6 +54,12 @@ class ChatInputComponent extends Component {
     }
     
   }
+  onInputClick = () => {
+    console.log(this.props);
+    
+    this.props.messageReadFn();
+  }
+  
 }
 
 export default withStyles(styles)(ChatInputComponent);

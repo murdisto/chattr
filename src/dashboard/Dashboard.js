@@ -22,6 +22,7 @@ class DashboardComponent extends Component {
     
     const { classes } = this.props;
     
+    
     return (
       <div>
         <ChatsComponent 
@@ -43,6 +44,7 @@ class DashboardComponent extends Component {
           <ChatInputComponent
             chats={this.state.chats}
             onSubmitMessageFn={this.onSubmitMessage}
+            messageReadFn={this.messageRead}
           ></ChatInputComponent> :
           null
         }
@@ -55,9 +57,10 @@ class DashboardComponent extends Component {
   
   onLogoutClick = () => firebase.auth().signOut();
   
-  onSelectChat = chatIndex => {
-    this.setState({ selectedChat: chatIndex });
+  onSelectChat = async chatIndex => {
+    await this.setState({ selectedChat: chatIndex });
     console.log('onSelectChat', this.state.selectedChat);
+    this.messageRead();
   } 
   
   onSubmitMessage = message => {
@@ -72,11 +75,28 @@ class DashboardComponent extends Component {
           sender: this.state.email,
           message,
           timestamp: Date.now()
-        })
+        }),
+        isRead: false
       });
   }
   
   buildDocKey = friend => [this.state.email, friend].sort().join(':')
+  
+  onNotificationClick = chatIndex => {
+    const { chats } = this.state;
+    return chats[chatIndex].messages[chats[chatIndex].messages.length - 1].sender !== this.state.email;
+  }
+  
+  messageRead = () => {
+    const docKey = this.buildDocKey(this.state.chats[this.state.selectedChat].users.filter(usr => usr !== this.state.email)[0]);
+
+    if (this.onNotificationClick(this.state.selectedChat)) {
+      firebase.firestore().collection('chats').doc(docKey).update({ isRead: true });
+    } else {
+      console.log('messageRead else statement');
+      
+    }
+  }
   
   onNewChatClick = () => {
     console.log('onNewChatButtonClick');

@@ -9,7 +9,8 @@ import { Divider } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import styles from './styles';
-
+import { ListItemIcon } from '@material-ui/core';
+import { NotificationImportant } from '@material-ui/icons';
 
 class ChatsComponent extends Component {
   
@@ -62,6 +63,11 @@ class ChatsComponent extends Component {
                         }
                       >
                       </ListItemText>
+                      {
+                        _chat.isRead === false && !this.userIsSender(_chat) ?
+                        <ListItemIcon><NotificationImportant className={classes.unreadMessage}></NotificationImportant></ListItemIcon> :
+                        null
+                      }
                     </ListItem>
                     <Divider></Divider>
                   </div>
@@ -97,6 +103,10 @@ class ChatsComponent extends Component {
     console.log('selectChat', index);
     this.props.onSelectChatFn(index);
   }
+  
+  userIsSender = chat => chat.messages[chat.messages.length - 1].sender === this.props.userEmail;
+  
+  
 }
 
 export default withStyles(styles)(ChatsComponent);

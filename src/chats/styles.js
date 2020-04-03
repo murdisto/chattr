@@ -12,6 +12,12 @@ const styles = theme => ({
   },
   newChatBtn: {
     borderRadius: '0px'
+  },
+  unreadMessage: {
+    color: 'lime',
+    position: 'absolute',
+    top: '0',
+    right: '5px'
   }
 });
 
