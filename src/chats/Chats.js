@@ -93,7 +93,7 @@ class ChatsComponent extends Component {
   
   selectChat = index => {
     console.log('selectChat', index);
-    
+    this.props.onSelectChatFn(index);
   }
 }
 

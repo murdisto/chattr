@@ -31,7 +31,12 @@ class DashboardComponent extends Component {
           userEmail={this.state.email}
           selectedChatIndex={this.state.selectedChat}
         ></ChatsComponent>
-        <ChatComponent></ChatComponent>
+        { this.state.newChatFormVisible ? null : 
+          <ChatComponent 
+            user={this.state.email}
+            chat={this.state.chats[this.state.selectedChat]}
+          ></ChatComponent> 
+        }
         <Button className={classes.logOutBtn} onClick={this.onLogoutClick}>Log out</Button>
       </div>
       
@@ -41,7 +46,8 @@ class DashboardComponent extends Component {
   onLogoutClick = () => firebase.auth().signOut();
   
   onSelectChat = chatIndex => {
-    console.log('onSelectChat', chatIndex);
+    this.setState({ selectedChat: chatIndex });
+    console.log('onSelectChat', this.state.selectedChat);
     
   } 
   
