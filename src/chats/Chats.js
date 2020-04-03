@@ -53,7 +53,9 @@ class ChatsComponent extends Component {
                           <React.Fragment>
                             <Typography component='span' color='textPrimary'>
                               {
-                                _chat.messages[_chat.messages.length - 1].message.substring(0, 30)
+                                _chat.messages[_chat.messages.length - 1].message.substring(0, 45).length > 44 ?
+                                _chat.messages[_chat.messages.length - 1].message.substring(0, 45) + '...' :
+                                _chat.messages[_chat.messages.length - 1].message.substring(0, 45)
                               }
                             </Typography>
                           </React.Fragment>

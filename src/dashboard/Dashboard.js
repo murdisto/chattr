@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import ChatsComponent from '../chats/Chats';
 import ChatComponent from '../chat/Chat';
+import ChatInputComponent from '../chatInput/ChatInput';
 import { Button, withStyles } from '@material-ui/core';
 import styles from './styles';
 const firebase = require('firebase/app');
@@ -37,6 +38,15 @@ class DashboardComponent extends Component {
             chat={this.state.chats[this.state.selectedChat]}
           ></ChatComponent> 
         }
+        {
+          this.state.selectedChat !== null && !this.state.newChatFormVisible ?
+          <ChatInputComponent
+            chats={this.state.chats}
+            onSubmitMessageFn={this.onSubmitMessage}
+          ></ChatInputComponent> :
+          null
+        }
+        
         <Button className={classes.logOutBtn} onClick={this.onLogoutClick}>Log out</Button>
       </div>
       
@@ -48,8 +58,25 @@ class DashboardComponent extends Component {
   onSelectChat = chatIndex => {
     this.setState({ selectedChat: chatIndex });
     console.log('onSelectChat', this.state.selectedChat);
-    
   } 
+  
+  onSubmitMessage = message => {
+    const docKey = this.buildDocKey(this.state.chats[this.state.selectedChat].users.filter(usr => usr !== this.state.email)[0]);
+    console.log(docKey);
+    firebase
+      .firestore()
+      .collection('chats')
+      .doc(docKey)
+      .update({
+        messages: firebase.firestore.FieldValue.arrayUnion({
+          sender: this.state.email,
+          message,
+          timestamp: Date.now()
+        })
+      });
+  }
+  
+  buildDocKey = friend => [this.state.email, friend].sort().join(':')
   
   onNewChatClick = () => {
     console.log('onNewChatButtonClick');
