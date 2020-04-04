@@ -97,6 +97,7 @@ class ChatsComponent extends Component {
   
   newChat = () => {
     console.log('New Chat button clicked');
+    this.props.onNewChatClickFn();
   }
   
   selectChat = index => {

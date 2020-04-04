@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import ChatsComponent from '../chats/Chats';
 import ChatComponent from '../chat/Chat';
 import ChatInputComponent from '../chatInput/ChatInput';
+import NewChatComponent from '../newChat/NewChat';
 import { Button, withStyles } from '@material-ui/core';
 import styles from './styles';
 const firebase = require('firebase/app');
@@ -48,7 +49,11 @@ class DashboardComponent extends Component {
           ></ChatInputComponent> :
           null
         }
-        
+        {
+          this.state.newChatFormVisible ?
+          <NewChatComponent goToChatFn={this.goToChat} newChatSubmitFn={this.newChatSubmit}></NewChatComponent> :
+          null
+        }
         <Button className={classes.logOutBtn} onClick={this.onLogoutClick}>Log out</Button>
       </div>
       
@@ -58,7 +63,7 @@ class DashboardComponent extends Component {
   onLogoutClick = () => firebase.auth().signOut();
   
   onSelectChat = async chatIndex => {
-    await this.setState({ selectedChat: chatIndex });
+    await this.setState({ selectedChat: chatIndex, newChatFormVisible: false });
     console.log('onSelectChat', this.state.selectedChat);
     this.messageRead();
   } 
@@ -98,6 +103,33 @@ class DashboardComponent extends Component {
     }
   }
   
+  newChatSubmit = async (chatObj) => {
+    const docKey = this.buildDocKey(chatObj.sendTo);
+    await 
+      firebase
+        .firestore()
+        .collection('chats')
+        .doc(docKey)
+        .set({
+          messages: [{
+            message: chatObj.message,
+            sender: this.state.email
+          }],
+          users: [this.state.email, chatObj.sendTo],
+          isRead: false
+        })
+    this.setState({ newChatFormVisible: false });
+    this.onSelectChat(this.state.chats.length - 1);
+  }
+  
+  goToChat = async (docKey, msg) => {
+    const usersInChat = docKey.split(':');
+    const chat = this.state.chats.find(_chat => usersInChat.every(_user => _chat.users.includes(_user)));
+    this.setState({ newChatFormVisible: false });
+    await this.onSelectChat(this.state.chats.indexOf(chat));
+    this.onSubmitMessage(msg);
+  }
+    
   onNewChatClick = () => {
     console.log('onNewChatButtonClick');
     this.setState({
